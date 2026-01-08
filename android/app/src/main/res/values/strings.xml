@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">GibberChat</string>
+    <string-array name="protocol_items">
+        <item>Normal</item>
+        <item>Fast</item>
+        <item>Fastest</item>
+        <item>Ultra Fast</item>
+        <item>DT</item>
+        <item>MT</item>
+        <item>DT Fast</item>
+        <item>MT Fast</item>
+    </string-array>
+</resources>

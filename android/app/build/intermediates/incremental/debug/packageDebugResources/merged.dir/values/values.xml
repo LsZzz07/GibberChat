@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="protocol_items">
+        <item>Normal</item>
+        <item>Fast</item>
+        <item>Fastest</item>
+        <item>Ultra Fast</item>
+        <item>DT</item>
+        <item>MT</item>
+        <item>DT Fast</item>
+        <item>MT Fast</item>
+    </string-array>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="input_bg">#F3F3F3</color>
+    <color name="light_purple_bubble">#7A78F0</color>
+    <color name="main_purple">#5E5CE6</color>
+    <color name="text_grey">#888888</color>
+    <color name="white">#FFFFFF</color>
+    <string name="app_name">GibberChat</string>
+    <style name="Theme.GibberChat" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/main_purple</item>
+        <item name="colorPrimaryDark">@color/main_purple</item>
+        <item name="colorAccent">@color/light_purple_bubble</item>
+        
+        
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

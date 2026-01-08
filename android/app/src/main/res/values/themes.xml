@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.GibberChat" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/main_purple</item>
+        <item name="colorPrimaryDark">@color/main_purple</item>
+        <item name="colorAccent">@color/light_purple_bubble</item>
+        
+        <!-- Status Bar Color -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

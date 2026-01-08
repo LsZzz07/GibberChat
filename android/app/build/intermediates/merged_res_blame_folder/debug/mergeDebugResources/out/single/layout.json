@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.example.gibberlink.app-mergeDebugResources-30:/layout/activity_main.xml",
+        "source": "com.example.gibberlink.app-main-33:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-mergeDebugResources-30:/layout/item_message_received.xml",
+        "source": "com.example.gibberlink.app-main-33:/layout/item_message_received.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-mergeDebugResources-30:/layout/item_message_sent.xml",
+        "source": "com.example.gibberlink.app-main-33:/layout/item_message_sent.xml"
+    }
+]

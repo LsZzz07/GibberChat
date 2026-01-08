@@ -1,0 +1,70 @@
+[
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_main_gradient.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_main_gradient.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/layout_item_message_sent.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/layout/item_message_sent.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/layout_activity_main.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_app_icon.png.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/app_icon.png"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_header_curve.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_header_curve.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_header_white_curve.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_header_white_curve.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_header_decor.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/header_decor.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_header_flare.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_header_flare.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_avatar_placeholder.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_avatar_placeholder.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_bubble_sent.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_bubble_sent.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_bubble_received.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_bubble_received.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_header_main.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_header_main.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_dropdown.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_dropdown.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_send_button.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_send_button.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_bg_input_pill.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/bg_input_pill.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/drawable_ic_header_curve.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/drawable/ic_header_curve.xml"
+    },
+    {
+        "merged": "com.example.gibberlink.app-debug-31:/layout_item_message_received.xml.flat",
+        "source": "com.example.gibberlink.app-main-33:/layout/item_message_received.xml"
+    }
+]
