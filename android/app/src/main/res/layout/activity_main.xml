@@ -10,7 +10,7 @@
     <!-- Mode chip background -->
     <View
         android:id="@+id/header_curve"
-        android:layout_width="130dp"
+        android:layout_width="140dp"
         android:layout_height="44dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="16dp"
@@ -18,7 +18,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Mode selector, sits on top of the chip -->
+    <!-- Dropdown arrow -->
+    <ImageView
+        android:id="@+id/iconChevron"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="14dp"
+        android:src="@drawable/ic_chevron_down"
+        android:importantForAccessibility="no"
+        app:layout_constraintEnd_toEndOf="@id/header_curve"
+        app:layout_constraintTop_toTopOf="@id/header_curve"
+        app:layout_constraintBottom_toBottomOf="@id/header_curve" />
+
+    <!-- Mode selector (on top, receives the taps) -->
     <Spinner
         android:id="@+id/spinnerProtocol"
         android:layout_width="0dp"
@@ -26,8 +38,10 @@
         android:theme="@android:style/ThemeOverlay.Material.Dark"
         android:entries="@array/protocol_items"
         android:background="@null"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
+        android:popupBackground="@drawable/bg_spinner_popup"
+        android:dropDownVerticalOffset="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="38dp"
         app:layout_constraintStart_toStartOf="@id/header_curve"
         app:layout_constraintEnd_toEndOf="@id/header_curve"
         app:layout_constraintTop_toTopOf="@id/header_curve"
@@ -105,7 +119,7 @@
         android:paddingTop="16dp"
         android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/divider_header"
-        app:layout_constraintBottom_toTopOf="@id/layoutInput" />
+        app:layout_constraintBottom_toTopOf="@id/layoutListening" />
 
     <!-- Debug log -->
     <TextView
@@ -115,7 +129,35 @@
         android:gravity="center"
         android:textColor="#8A8A8A"
         android:textSize="10sp"
-        app:layout_constraintBottom_toTopOf="@id/layoutInput" />
+        app:layout_constraintBottom_toTopOf="@id/layoutListening" />
+
+    <!-- Listening indicator -->
+    <LinearLayout
+        android:id="@+id/layoutListening"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="10dp"
+        android:background="#000000"
+        app:layout_constraintBottom_toTopOf="@id/layoutInput">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_wave"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Listening for sound"
+            android:textColor="#3DDCFF"
+            android:textSize="13sp" />
+    </LinearLayout>
 
     <!-- Input area -->
     <LinearLayout
@@ -162,10 +204,13 @@
                 android:id="@+id/btnSend"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="center"
-                android:src="@android:drawable/ic_menu_send"
-                app:tint="#000000"
-                android:rotation="-30" />
+                android:padding="16dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_send_arrow"
+                android:contentDescription="Send message"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 
