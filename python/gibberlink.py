@@ -1,139 +1,242 @@
-import ggwave
+import tkinter as tk
+from tkinter import ttk, scrolledtext
 import pyaudio
+import ggwave
+import numpy as np
+import threading
 import time
 import sys
-import numpy as np
 
 # Configuration
-PROTOCOL_ID = 0  # Audible Normal
-PAYLOAD_LENGTH = -1 # Variable length
-FRAMES_PER_BUFFER = 2048
 SAMPLE_RATE = 48000
 CHANNELS = 1
-FORMAT = pyaudio.paFloat32
+FORMAT = pyaudio.paFloat32  # ggwave usually likes Float32
+FRAMES_PER_BUFFER = 2048
 
-def listen_for_data():
-    """
-    Continuously listens to the microphone and decodes ggwave signals.
-    """
-    p = pyaudio.PyAudio()
+# Theme (navy blue, matching the wallpaper)
+BG_MAIN = "#0B1B3F"      # window background
+BG_PANEL = "#16294F"     # header / input bars
+BG_CHAT = "#0F2147"      # chat area
+BG_FIELD = "#1E3A6E"     # text fields
+BG_RECEIVED = "#2B4C85"  # received bubble
+BG_SENT = "#4A6FB5"      # sent bubble
+FG_TEXT = "#FFFFFF"      # main text
+FG_MUTED = "#9DB2D8"     # secondary text
+ACCENT = "#5C78B0"       # buttons
 
-    try:
-        stream = p.open(format=FORMAT,
-                        channels=CHANNELS,
-                        rate=SAMPLE_RATE,
-                        input=True,
-                        frames_per_buffer=FRAMES_PER_BUFFER)
-    except OSError as e:
-        print(f"Error opening audio stream: {e}")
-        print("Please ensure a microphone is connected and accessible.")
-        return
+# Protocols map
+PROTOCOLS = {
+    "Normal": 0,
+    "Fast": 1,
+    "Fastest": 2,
+    "Ultra Fast": 3,
+    "DT": 4,
+    "MT": 5,
+    "DT Fast": 6,
+    "MT Fast": 7
+}
 
-    print("Listening for messages... (Press Ctrl+C to stop)")
-    print(f"Protocol ID: {PROTOCOL_ID} (Audible Fast)")
+class GibberlinkApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("GibberChat PC")
+        self.root.geometry("400x600")
+        self.root.configure(bg=BG_MAIN)
 
-    try:
-        # Init specific for Int16 input if possible, but python binding usually takes default.
-        # However, passing int16 bytes to default init (which expects f32) might be bad.
-        # Let's try to convert to float manually OR assume binding handles it.
-        # Actually, let's Stick to paFloat32 for now as it's the default expectation of ggwave python examples.
-        # Reverting to Float32? No, let's keep Int16 and convert, or use Float32.
-        # The user was using Float32 and it failed. 
-        # Let's try Float32 again with volume check.
-        
-        instance = ggwave.init()
-        
-        # Ensure we are using the correct protocol on the receiving end if possible,
-        # otherwise ggwave attempts to detect.
-        # ggwave-python binding might not expose strict protocol setting for decoding easily 
-        # without digging into C++ instance details, but default decode handles it.
+        # Audio State
+        self.p = pyaudio.PyAudio()
+        self.ggwave = ggwave.init()
+        self.is_listening = True
+        self.lock = threading.Lock()
+
+        # UI Setup
+        self.setup_style()
+        self.setup_ui()
+
+        # Start Listener Thread
+        self.listen_thread = threading.Thread(target=self.listener_loop, daemon=True)
+        self.listen_thread.start()
+
+    def setup_style(self):
+        style = ttk.Style(self.root)
+        style.theme_use("clam")  # clam respects custom colors
+
+        style.configure("TFrame", background=BG_PANEL)
+        style.configure("TLabel", background=BG_PANEL, foreground=FG_TEXT)
+        style.configure("Status.TLabel", background=BG_MAIN, foreground=FG_MUTED)
+        style.configure("TEntry", fieldbackground=BG_FIELD, foreground=FG_TEXT,
+                        insertcolor=FG_TEXT, bordercolor=BG_FIELD)
+        style.configure("TCombobox", fieldbackground=BG_FIELD, background=ACCENT,
+                        foreground=FG_TEXT, arrowcolor=FG_TEXT, bordercolor=BG_FIELD)
+        style.map("TCombobox",
+                  fieldbackground=[("readonly", BG_FIELD)],
+                  foreground=[("readonly", FG_TEXT)],
+                  selectbackground=[("readonly", BG_FIELD)],
+                  selectforeground=[("readonly", FG_TEXT)])
+        style.configure("TButton", background=ACCENT, foreground=FG_TEXT,
+                        bordercolor=ACCENT, focuscolor=ACCENT, padding=4)
+        style.map("TButton", background=[("active", "#7A93C7")])
+
+        # Dropdown list colors for the combobox
+        self.root.option_add("*TCombobox*Listbox.background", BG_FIELD)
+        self.root.option_add("*TCombobox*Listbox.foreground", FG_TEXT)
+        self.root.option_add("*TCombobox*Listbox.selectBackground", ACCENT)
+        self.root.option_add("*TCombobox*Listbox.selectForeground", FG_TEXT)
+
+    def setup_ui(self):
+        # 1. Header Frame (Settings)
+        header_frame = ttk.Frame(self.root, padding="10")
+        header_frame.pack(fill=tk.X)
+
+        # Name Input
+        ttk.Label(header_frame, text="Name:").pack(side=tk.LEFT)
+        self.name_var = tk.StringVar(value="PC User")
+        self.entry_name = ttk.Entry(header_frame, textvariable=self.name_var, width=10)
+        self.entry_name.pack(side=tk.LEFT, padx=5)
+
+        # Protocol Selector
+        ttk.Label(header_frame, text="Speed:").pack(side=tk.LEFT)
+        self.protocol_var = tk.StringVar(value="Normal")
+        self.combo_protocol = ttk.Combobox(header_frame, textvariable=self.protocol_var, values=list(PROTOCOLS.keys()), width=8, state="readonly")
+        self.combo_protocol.pack(side=tk.LEFT, padx=5)
+
+        # 2. Chat History (Scrollable)
+        self.chat_display = scrolledtext.ScrolledText(
+            self.root, state='disabled', wrap=tk.WORD, font=("Segoe UI", 10),
+            bg=BG_CHAT, fg=FG_TEXT, insertbackground=FG_TEXT,
+            relief=tk.FLAT, borderwidth=0, highlightthickness=0
+        )
+        self.chat_display.pack(expand=True, fill=tk.BOTH, padx=10, pady=5)
+
+        # Configure tags for colors/alignment
+        self.chat_display.tag_config("received", foreground=FG_TEXT, background=BG_RECEIVED, lmargin1=10, lmargin2=10, rmargin=50)
+        self.chat_display.tag_config("sent", foreground=FG_TEXT, background=BG_SENT, lmargin1=50, lmargin2=50, rmargin=10, justify='right')
+        self.chat_display.tag_config("system", foreground=FG_MUTED, justify='center', font=("Segoe UI", 8))
+        self.chat_display.tag_config("sender_name", font=("Segoe UI", 8, "bold"), foreground=FG_MUTED)
+
+        # 3. Input Area
+        input_frame = ttk.Frame(self.root, padding="10")
+        input_frame.pack(fill=tk.X)
+
+        self.msg_entry = ttk.Entry(input_frame)
+        self.msg_entry.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 5))
+        self.msg_entry.bind("<Return>", lambda e: self.send_message())
+
+        self.btn_send = ttk.Button(input_frame, text="Send", command=self.send_message)
+        self.btn_send.pack(side=tk.LEFT)
+
+        # Vu Meter Label (Simple text based)
+        self.lbl_status = ttk.Label(self.root, text="Status: Ready", font=("Consolas", 8), style="Status.TLabel")
+        self.lbl_status.pack(side=tk.BOTTOM, anchor=tk.W, padx=10, pady=2)
+
+    def append_message(self, name, text, is_sent):
+        self.chat_display.configure(state='normal')
+
+        tag = "sent" if is_sent else "received"
+
+        # Create a "Bubble" effect with text
+        display_text = f"{name}:\n{text}\n\n"
+        self.chat_display.insert(tk.END, display_text, tag)
+
+        self.chat_display.configure(state='disabled')
+        self.chat_display.see(tk.END)
+
+    def append_system(self, text):
+        self.chat_display.configure(state='normal')
+        self.chat_display.insert(tk.END, f"{text}\n", "system")
+        self.chat_display.configure(state='disabled')
+        self.chat_display.see(tk.END)
+
+    def send_message(self):
+        text = self.msg_entry.get().strip()
+        if not text:
+            return
+
+        name = self.name_var.get().strip().replace("|", "") # sanitize
+        full_payload = f"{name}|{text}"
+
+        protocol_name = self.protocol_var.get()
+        protocol_id = PROTOCOLS[protocol_name]
+
+        # Encode
+        threading.Thread(target=self._send_thread, args=(full_payload, text, protocol_id)).start()
+        self.msg_entry.delete(0, tk.END)
+
+    def _send_thread(self, payload, original_text, protocol_id):
+        try:
+            waveform = ggwave.encode(payload, protocolId=protocol_id, volume=50)
+            if waveform:
+                self.root.after(0, lambda: self.append_message("Me", original_text, True))
+
+                # Play
+                stream = self.p.open(format=pyaudio.paInt16, # Encode returns Int16 usually! Check gibberlink.py history.
+                                   channels=CHANNELS,
+                                   rate=SAMPLE_RATE,
+                                   output=True)
+                stream.write(waveform)
+                stream.stop_stream()
+                stream.close()
+                self.root.after(0, lambda: self.lbl_status.configure(text="Status: Sent"))
+            else:
+                self.root.after(0, lambda: self.append_system("Error: Could not encode message"))
+
+        except Exception as e:
+             self.root.after(0, lambda: self.append_system(f"Error sending: {e}"))
+        finally:
+            pass
+
+    def listener_loop(self):
+        try:
+            stream = self.p.open(format=FORMAT,
+                               channels=CHANNELS,
+                               rate=SAMPLE_RATE,
+                               input=True,
+                               frames_per_buffer=FRAMES_PER_BUFFER) # Use 4096 if needed
+        except Exception as e:
+            self.root.after(0, lambda: self.append_system(f"Mic Error: {e}"))
+            return
+
+        print("Listener started...")
 
         while True:
-            data = stream.read(FRAMES_PER_BUFFER, exception_on_overflow=False)
-            # Convert raw bytes to numpy array of floats if using paFloat32, 
-            # but ggwave.decode expects bytes or specific buffer format.
-            # PyAudio read returns bytes. 
-            
-            # ggwave.decode() takes the audio buffer.
-            # We need to pass the raw data.
-            # VU Meter
-            # Calculate volume
-            data_np = np.frombuffer(data, dtype=np.float32) 
-            volume_norm = np.linalg.norm(data_np)
-            print("." if volume_norm < 1 else "#" if volume_norm < 10 else "!", end="", flush=True)
+            try:
+                if not self.is_listening:
+                    time.sleep(0.1)
+                    continue
 
-            res = ggwave.decode(instance, data)
+                data = stream.read(FRAMES_PER_BUFFER, exception_on_overflow=False)
 
-            if res:
-                try:
-                    # data is received as bytes, try decoding to utf-8 string
-                    text = res.decode('utf-8')
-                    print(f"\n[RECEIVED]: {text}")
-                except UnicodeDecodeError:
-                    print(f"\n[RECEIVED - RAW]: {res}")
+                res = ggwave.decode(self.ggwave, data)
 
-    except KeyboardInterrupt:
-        print("\nStopping listener...")
-    finally:
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-        ggwave.free(instance)
+                if res and not self.ggwave.rxData is None:
+                    # Message received!
+                    try:
+                        payload = res.decode("utf-8")
+                        # Parse Name|Message
+                        if "|" in payload:
+                            parts = payload.split("|", 1)
+                            name = parts[0]
+                            msg = parts[1]
+                        else:
+                            name = "Unknown"
+                            msg = payload
 
-def send_data(text):
-    """
-    Encodes the text to a waveform and plays it via speakers.
-    """
-    print(f"Encoding message: '{text}'")
-    
-    # Encode text to waveform
-    # ggwave.encode returns valid audio samples
-    waveform = ggwave.encode(text, protocolId=PROTOCOL_ID, volume=50)
-    
-    if not waveform:
-        print("Error: Failed to encode message.")
-        return
+                        self.root.after(0, lambda n=name, m=msg: self.append_message(n, m, False))
+                    except:
+                        pass # Binary or invalid utf-8
 
-    p = pyaudio.PyAudio()
-    
-    try:
-        stream = p.open(format=pyaudio.paFloat32, 
-                        channels=CHANNELS,
-                        rate=SAMPLE_RATE,
-                        output=True)
-        
-        # Play the waveform
-        stream.write(waveform)
-        
-        # Wait a bit to ensure playback finishes if needed, or just close
-        time.sleep(0.5) 
+            except Exception as e:
+                print(f"Listener error: {e}")
+                time.sleep(1)
 
-    finally:
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-        print("Message sent.")
-
-def main():
-    while True:
-        print("\n--- Gibberlink (Python) ---")
-        print("1. Listen Description")
-        print("2. Send Message")
-        print("3. Exit")
-        
-        choice = input("Select mode (1/2/3): ").strip()
-
-        if choice == '1':
-            listen_for_data()
-        elif choice == '2':
-            text = input("Enter message: ")
-            if text:
-                send_data(text)
-        elif choice == '3':
-            print("Exiting.")
-            break
-        else:
-            print("Invalid choice.")
+    def on_close(self):
+        self.is_listening = False
+        self.p.terminate()
+        self.root.destroy()
+        sys.exit()
 
 if __name__ == "__main__":
-    main()
+    root = tk.Tk()
+    app = GibberlinkApp(root)
+    root.protocol("WM_DELETE_WINDOW", app.on_close)
+    root.mainloop()
