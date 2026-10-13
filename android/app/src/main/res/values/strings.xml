@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GibberChat</string>
+    <string name="app_name">ToneFall</string>
     <string-array name="protocol_items">
         <item>Normal</item>
         <item>Fast</item>
