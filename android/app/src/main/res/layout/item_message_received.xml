@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:gravity="start"
     android:paddingBottom="12dp">
 
@@ -18,4 +19,13 @@
         android:text="Hello!"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="6dp"
+        android:text="Received"
+        android:textColor="#8A8A8A"
+        android:textSize="11sp" />
 </LinearLayout>
