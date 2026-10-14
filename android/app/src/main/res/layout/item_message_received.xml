@@ -2,30 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:gravity="start"
-    android:paddingBottom="12dp">
+    android:paddingBottom="8dp">
 
     <TextView
         android:id="@+id/textMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="280dp"
-        android:background="@drawable/bubble_incoming"
+        android:maxWidth="290dp"
+        android:background="@drawable/bg_bubble_received"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:text="Hello!"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="6dp"
-        android:text="Received"
-        android:textColor="#8A8A8A"
-        android:textSize="11sp" />
+        android:textColor="#F3F5FA"
+        android:textSize="16sp" />
 </LinearLayout>
