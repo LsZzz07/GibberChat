@@ -37,7 +37,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var editName: EditText
     private lateinit var spinnerProtocol: Spinner
     private lateinit var textLog: TextView
-
+    private lateinit var chatAnimator: ChatAnimator
+    
     companion object {
         private const val REQUEST_RECORD_AUDIO = 13
         private const val SAMPLE_RATE = 48000
@@ -61,7 +62,14 @@ class MainActivity : AppCompatActivity() {
             stackFromEnd = true // Show latest messages at bottom
         }
         recyclerChat.adapter = chatAdapter
-
+        chatAnimator = ChatAnimator(
+    recyclerChat,
+    findViewById(R.id.waveIcon),
+    findViewById(R.id.textStatus),
+    findViewById(R.id.cardSend)
+)
+chatAnimator.start()
+        
         // Setup GGWave
         ggWave.init()
 
@@ -203,6 +211,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        chatAnimator.stop()
         super.onDestroy()
         isRecording = false
         audioRecord?.stop()
