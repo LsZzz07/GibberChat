@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_main_gradient">
 
+    <!-- Header panel (sits behind everything in the header) -->
+    <View
+        android:id="@+id/headerBg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#121826"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/divider_header" />
+
     <!-- Mode chip background -->
     <View
         android:id="@+id/header_curve"
@@ -56,7 +65,7 @@
         android:layout_marginTop="40dp"
         app:cardCornerRadius="22dp"
         app:cardElevation="0dp"
-        app:cardBackgroundColor="#FFFFFF"
+        app:cardBackgroundColor="#8B5CF6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -86,18 +95,34 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:text="User Name"
-            android:textColor="#FFFFFF"
+            android:textColor="#F3F5FA"
             android:textStyle="bold"
-            android:textSize="18sp"
+            android:textSize="19sp"
             android:inputType="textPersonName"
             android:maxLines="1" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Online"
-            android:textColor="#8A8A8A"
-            android:textSize="13sp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="6dp"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#34D399" />
+
+            <TextView
+                android:id="@+id/textOnline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Online"
+                android:textColor="#98A1B5"
+                android:textSize="13sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Divider under header -->
@@ -106,7 +131,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="#1C1C1C"
+        android:background="#4D22D3EE"
         app:layout_constraintTop_toBottomOf="@id/cardAvatar" />
 
     <!-- Chat list -->
@@ -114,8 +139,8 @@
         android:id="@+id/recyclerChat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingTop="16dp"
         android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/divider_header"
@@ -127,7 +152,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="#8A8A8A"
+        android:textColor="#98A1B5"
         android:textSize="10sp"
         app:layout_constraintBottom_toTopOf="@id/layoutListening" />
 
@@ -140,23 +165,27 @@
         android:gravity="center_vertical"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingBottom="10dp"
-        android:background="#000000"
+        android:paddingTop="6dp"
+        android:paddingBottom="8dp"
         app:layout_constraintBottom_toTopOf="@id/layoutInput">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="16dp"
+            android:id="@+id/waveIcon"
+            android:layout_width="30dp"
+            android:layout_height="18dp"
             android:src="@drawable/ic_wave"
+            app:tint="#22D3EE"
             android:importantForAccessibility="no" />
 
         <TextView
+            android:id="@+id/textStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="Listening for sound"
-            android:textColor="#3DDCFF"
-            android:textSize="13sp" />
+            android:textColor="#22D3EE"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <!-- Input area -->
@@ -165,9 +194,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
         android:gravity="bottom"
-        android:background="#000000"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
@@ -176,8 +207,8 @@
             android:layout_weight="1"
             android:background="@drawable/bg_input_pill"
             android:gravity="center_vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp">
 
             <EditText
                 android:id="@+id/editMessage"
@@ -185,8 +216,8 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:hint="Type a message"
-                android:textColorHint="#8A8A8A"
-                android:textColor="#FFFFFF"
+                android:textColorHint="#8B93A7"
+                android:textColor="#F3F5FA"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -194,10 +225,11 @@
 
         <!-- Send button -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardSend"
             android:layout_width="56dp"
             android:layout_height="56dp"
             app:cardCornerRadius="28dp"
-            app:cardBackgroundColor="#3DDCFF"
+            app:cardBackgroundColor="#22D3EE"
             app:cardElevation="0dp">
 
             <ImageView
@@ -207,6 +239,7 @@
                 android:padding="16dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_send_arrow"
+                app:tint="#0A0F1A"
                 android:contentDescription="Send message"
                 android:clickable="true"
                 android:focusable="true"
